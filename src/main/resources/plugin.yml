@@ -1,0 +1,78 @@
+name: Ethos
+version: 1.0
+main: law.ethos.Ethos
+api-version: 1.16
+
+commands:
+  createrank:
+    description: Creates a new rank
+    usage: /createrank <name> <color> <prefix> <weight>
+    permission: ethos.createrank
+  grantrank:
+    description: Grants a rank to a player
+    usage: /grantrank <player> <rank>
+    permission: ethos.grantrank
+  editrank:
+    description: Edits an existing rank
+    usage: /editrank <name> <color> <prefix> <weight>
+    permission: ethos.editrank
+  deleterank:
+    description: Deletes a rank
+    usage: /deleterank <name>
+    permission: ethos.deleterank
+  setpermission:
+    description: Adds a permission to a rank
+    usage: /setpermission <rank> <permission>
+    permission: ethos.setpermission
+  listranks:
+    description: Lists all ranks
+    usage: /listranks
+    permission: ethos.listranks
+  list:
+    description: Lists all online players with their ranks
+    usage: /list
+    permission: ethos.list
+  info:
+    description: Displays information about a rank or player
+    usage: /info <rank|player>
+    permission: ethos.info
+  ban:
+    description: Bans a player
+    usage: /ban <player> <reason> [duration]
+    permission: ethos.ban
+  kick:
+    description: Kicks a player
+    usage: /kick <player> <reason>
+    permission: ethos.kick
+  mute:
+    description: Mutes a player
+    usage: /mute <player> <duration>
+    permission: ethos.mute
+  unban:
+    description: Unbans a player
+    usage: /unban <player>
+    permission: ethos.unban
+  unmute:
+    description: Unmutes a player
+    usage: /unmute <player>
+    permission: ethos.unmute
+  fly:
+    description: Toggles fly mode
+    usage: /fly
+    permission: ethos.fly
+  gmc:
+    description: Switches to creative mode
+    usage: /gmc
+    permission: ethos.gmc
+  gms:
+    description: Switches to survival mode
+    usage: /gms
+    permission: ethos.gms
+  tp:
+    description: Teleports a player
+    usage: /tp <player>
+    permission: ethos.tp
+  history:
+    description: Displays punishment history of a player
+    usage: /history <player>
+    permission: ethos.history
