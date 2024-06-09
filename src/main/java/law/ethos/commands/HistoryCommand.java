@@ -1,7 +1,9 @@
 package law.ethos.commands;
 
+import law.ethos.Ethos;
 import law.ethos.gui.PunishmentHistoryGUI;
 import law.ethos.methods.Punishments;
+import law.ethos.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,29 +14,28 @@ import java.util.List;
 
 public class HistoryCommand implements CommandExecutor {
 
+    private final Ethos plugin = Ethos.getInstance();
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player) && args.length != 1) {
-            sender.sendMessage("Usage: /history <player>");
+        if (!sender.hasPermission(plugin.getPermission("history"))) {
+            sender.sendMessage(ChatUtil.colorize(plugin.getMessage("messages.no_permission")));
+            return true;
+        }
+
+        if (args.length != 1) {
+            sender.sendMessage(ChatUtil.colorize(plugin.getMessage("messages.usage.history")));
             return false;
         }
 
-        Player targetPlayer = args.length == 1 ? Bukkit.getPlayer(args[0]) : (Player) sender;
+        Player targetPlayer = Bukkit.getPlayer(args[0]);
         if (targetPlayer == null) {
-            sender.sendMessage("Player not found.");
+            sender.sendMessage(ChatUtil.colorize(plugin.getMessage("messages.player_not_found")));
             return false;
         }
 
         List<Punishments.Punishment> punishments = Punishments.getPunishments(targetPlayer.getUniqueId());
-        if (sender instanceof Player) {
-            PunishmentHistoryGUI.openPunishmentHistory((Player) sender, punishments);
-        } else {
-            // Handle console output for punishment history
-            sender.sendMessage("Punishment history for " + targetPlayer.getName() + ":");
-            for (Punishments.Punishment punishment : punishments) {
-                sender.sendMessage(punishment.getType() + ": " + punishment.getReason() + " (" + (punishment.getDuration() == -1 ? "Permanent" : punishment.getDuration() + " seconds") + ")");
-            }
-        }
+        PunishmentHistoryGUI.openPunishmentHistory((Player) sender, punishments);
         return true;
     }
 }

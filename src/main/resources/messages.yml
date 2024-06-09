@@ -1,0 +1,94 @@
+messages:
+  no_permission: "&cYou do not have permission to use this command."
+  invalid_number: "&cInvalid number provided."
+  player_not_found: "&cPlayer not found."
+  usage_prefix: "&eUsage: "
+
+  # Command-specific messages
+  usage:
+    createrank: "&e/createrank <rankName> <color> <prefix> <weight>"
+    editrank: "&e/editrank <rankName> <color> <prefix> <weight>"
+    deleterank: "&e/deleterank <rankName>"
+    grantrank: "&e/grantrank <player> <rank>"
+    setpermission: "&e/setpermission <rank> <permission>"
+    list: "&e/list"
+    ban: "&e/ban <player> <reason> <duration>"
+    unban: "&e/unban <player>"
+    mute: "&e/mute <player> <reason> <duration>"
+    unmute: "&e/unmute <player>"
+    history: "&e/history <player>"
+    info: "&e/info <player>"
+    fly: "&e/fly"
+    tp: "&e/tp <player>"
+
+  createrank:
+    success: "&aRank {rank} created successfully."
+    rank_exists: "&cRank {rank} already exists."
+
+  editrank:
+    success: "&aRank {rank} edited successfully."
+    rank_not_found: "&cRank {rank} not found."
+
+  deleterank:
+    success: "&aRank {rank} deleted successfully."
+    rank_not_found: "&cRank {rank} not found."
+
+  grantrank:
+    success: "&aGranted rank {rank} to {player}."
+    rank_not_found: "&cRank {rank} not found."
+    player_not_found: "&cPlayer {player} not found."
+
+  setpermission:
+    success: "&aAdded permission {permission} to rank {rank}."
+    rank_not_found: "&cRank {rank} not found."
+
+  list:
+    header: "&aOnline Players:"
+    entry: "&a{player} - {rank}"
+    no_players: "&cNo players online."
+
+  ban:
+    success: "&a{player} has been banned for {reason} for {duration}."
+    broadcast: "&a{player} has been banned for {reason} for {duration}."
+    player_not_found: "&cPlayer {player} not found."
+    already_banned: "&cPlayer {player} is already banned."
+
+  unban:
+    success: "&a{player} has been unbanned."
+    player_not_found: "&cPlayer {player} not found."
+
+  mute:
+    success: "&a{player} has been muted for {reason} for {duration}."
+    broadcast: "&a{player} has been muted for {reason} for {duration}."
+    player_not_found: "&cPlayer {player} not found."
+    already_muted: "&cPlayer {player} is already muted."
+
+  unmute:
+    success: "&a{player} has been unmuted."
+    player_not_found: "&cPlayer {player} not found."
+
+  history:
+    header: "&aPunishment History for {player}:"
+    entry: "&a{type} - {reason} - {duration}"
+    no_history: "&cNo punishment history found for {player}."
+
+  info:
+    header: "&aPlayer Info:"
+    name: "&aName: {name}"
+    uuid: "&aUUID: {uuid}"
+    location: "&aLocation: {location}"
+    last_login: "&aLast Login: {last_login}"
+    player_not_found: "&cPlayer {player} not found."
+    rank_header: "&aRank Info:"
+    rank_name: "&aName: {name}"
+    rank_color: "&aColor: {color}"
+    rank_prefix: "&aPrefix: {prefix}"
+    rank_weight: "&aWeight: {weight}"
+
+  fly:
+    enabled: "&aFly mode enabled."
+    disabled: "&aFly mode disabled."
+
+  tp:
+    success: "&aTeleported to {player}."
+    player_not_found: "&cPlayer {player} not found."

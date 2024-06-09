@@ -2,6 +2,7 @@ package law.ethos.methods;
 
 import law.ethos.DatabaseManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -9,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -57,13 +60,13 @@ public class Punishments {
         long duration = parseDuration(durationString);
         recordPunishment(offlinePlayer.getUniqueId(), PunishmentType.BAN, reason, duration);
         if (offlinePlayer.isOnline()) {
-            ((Player) offlinePlayer).kickPlayer("You have been banned for: " + reason);
+            ((Player) offlinePlayer).kickPlayer(ChatColor.RED + "You have been banned for: " + reason);
         }
     }
 
     public static void kickPlayer(Player player, String reason) {
         recordPunishment(player.getUniqueId(), PunishmentType.KICK, reason, 0);
-        player.kickPlayer("You have been kicked for: " + reason);
+        player.kickPlayer(ChatColor.RED + "You have been kicked for: " + reason);
     }
 
     public static void mutePlayer(String playerName, String reason, String durationString) {
@@ -157,5 +160,33 @@ public class Punishments {
             }
         }
         return duration;
+    }
+
+    public static String formatDuration(long seconds) {
+        if (seconds == -1) {
+            return "Permanent";
+        }
+
+        Duration duration = Duration.of(seconds, ChronoUnit.SECONDS);
+        long days = duration.toDays();
+        long hours = duration.toHours() % 24;
+        long minutes = duration.toMinutes() % 60;
+        long secs = duration.getSeconds() % 60;
+
+        StringBuilder formatted = new StringBuilder();
+        if (days > 0) {
+            formatted.append(days).append(" day(s) ");
+        }
+        if (hours > 0) {
+            formatted.append(hours).append(" hour(s) ");
+        }
+        if (minutes > 0) {
+            formatted.append(minutes).append(" minute(s) ");
+        }
+        if (secs > 0) {
+            formatted.append(secs).append(" second(s) ");
+        }
+
+        return formatted.toString().trim();
     }
 }

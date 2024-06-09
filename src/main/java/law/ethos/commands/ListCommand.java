@@ -1,42 +1,53 @@
 package law.ethos.commands;
 
+import law.ethos.Ethos;
 import law.ethos.methods.Ranks;
+import law.ethos.methods.Ranks.Rank;
+import law.ethos.util.ChatUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class ListCommand implements CommandExecutor {
 
+    private final Ethos plugin = Ethos.getInstance();
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            if (player.hasPermission("ethos.list")) {
-                List<Player> players = Bukkit.getOnlinePlayers().stream()
-                        .sorted((p1, p2) -> {
-                            Ranks.Rank rank1 = Ranks.getPlayerRank(p1.getName());
-                            Ranks.Rank rank2 = Ranks.getPlayerRank(p2.getName());
-                            if (rank1 == null) return 1;
-                            if (rank2 == null) return -1;
-                            return Integer.compare(rank2.getWeight(), rank1.getWeight());
-                        })
-                        .collect(Collectors.toList());
+        if (!sender.hasPermission(plugin.getPermission("list"))) {
+            sender.sendMessage(ChatUtil.colorize(plugin.getMessage("messages.no_permission")));
+            return true;
+        }
 
-                player.sendMessage("Online Players:");
-                for (Player p : players) {
-                    Ranks.Rank rank = Ranks.getPlayerRank(p.getName());
-                    String displayName = rank != null ? rank.getColor() + p.getName() + org.bukkit.ChatColor.RESET : p.getName();
-                    player.sendMessage(displayName);
-                }
-            } else {
-                player.sendMessage("You do not have permission to use this command.");
+        Map<UUID, Rank> playerRanks = new HashMap<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Rank rank = Ranks.getPlayerRank(player.getUniqueId());
+            playerRanks.put(player.getUniqueId(), rank);
+        }
+
+        List<Map.Entry<UUID, Rank>> sortedPlayers = new ArrayList<>(playerRanks.entrySet());
+        sortedPlayers.sort((a, b) -> {
+            Rank rankA = a.getValue();
+            Rank rankB = b.getValue();
+            return Integer.compare(rankB.getWeight(), rankA != null ? rankA.getWeight() : 0);
+        });
+
+        sender.sendMessage(ChatUtil.colorize(plugin.getMessage("messages.list.header")));
+        for (Map.Entry<UUID, Rank> entry : sortedPlayers) {
+            Player player = Bukkit.getPlayer(entry.getKey());
+            Rank rank = entry.getValue();
+            if (player != null && rank != null) {
+                sender.sendMessage(ChatUtil.colorize(rank.getColor() + player.getName() + " - " + rank.getName()));
+            } else if (player != null) {
+                sender.sendMessage(ChatUtil.colorize(player.getName() + " - " + ChatColor.GRAY + "No Rank"));
             }
         }
+
         return true;
     }
 }

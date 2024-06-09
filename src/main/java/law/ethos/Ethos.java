@@ -4,11 +4,18 @@ import law.ethos.commands.*;
 import law.ethos.listeners.*;
 import law.ethos.methods.*;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
 
 public class Ethos extends JavaPlugin {
 
     private static Ethos instance;
+    private FileConfiguration messagesConfig;
 
     public static Ethos getInstance() {
         return instance;
@@ -20,8 +27,17 @@ public class Ethos extends JavaPlugin {
         // Plugin startup logic
         getLogger().info("Ethos plugin enabled!");
 
+        // Create default configuration files
+        saveDefaultConfig();
+        createMessagesConfig();
+
+        // Load configuration files
+        loadConfig();
+        loadMessagesConfig();
+
         // Connect to the database
         DatabaseManager.connect();
+        Ranks.loadRanksFromDatabase();
 
         // Register commands
         registerCommands();
@@ -33,6 +49,16 @@ public class Ethos extends JavaPlugin {
         initializeDefaultRank();
     }
 
+    private void createMessagesConfig() {
+        File messagesFile = new File(getDataFolder(), "messages.yml");
+        if (!messagesFile.exists()) {
+            messagesFile.getParentFile().mkdirs();
+            saveResource("messages.yml", false);
+        }
+
+        messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
+    }
+
     @Override
     public void onDisable() {
         // Plugin shutdown logic
@@ -42,11 +68,49 @@ public class Ethos extends JavaPlugin {
         DatabaseManager.disconnect();
     }
 
+    private void loadConfig() {
+        saveDefaultConfig();
+    }
+
+    private void loadMessagesConfig() {
+        File messagesFile = new File(getDataFolder(), "messages.yml");
+        if (!messagesFile.exists()) {
+            saveResource("messages.yml", false);
+        }
+        messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
+    }
+
+    public FileConfiguration getMessagesConfig() {
+        return messagesConfig;
+    }
+
+    public String getMessage(String path) {
+        String message = messagesConfig.getString(path);
+        if (message == null) {
+            return "Message not configured for path: " + path;
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    public void reloadMessagesConfig() {
+        File messagesFile = new File(getDataFolder(), "messages.yml");
+        if (messagesFile.exists()) {
+            messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
+        }
+    }
+
+
+    public String getPermission(String path) {
+        return getConfig().getString("settings.permissions." + path);
+    }
+
     private void initializeDefaultRank() {
         String defaultRankName = "Player";
         if (Ranks.getRank(defaultRankName) == null) {
             Ranks.createRank(defaultRankName, ChatColor.WHITE, "&7[Player]", 0);
             getLogger().info("Default rank 'Player' created.");
+        } else {
+            getLogger().info("Default rank 'Player' already exists.");
         }
     }
 

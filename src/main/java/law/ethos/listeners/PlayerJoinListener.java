@@ -1,11 +1,12 @@
 package law.ethos.listeners;
 
-import law.ethos.methods.Ranks;
 import law.ethos.DatabaseManager;
+import law.ethos.methods.Ranks;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.entity.Player;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,15 +24,15 @@ public class PlayerJoinListener implements Listener {
         if (!isPlayerInDatabase(playerUUID)) {
             savePlayerToDatabase(playerUUID, playerName);
             // Assign default rank
-            Ranks.grantRank(player, "Player");
+            Ranks.grantRank(player.getUniqueId(), "Player");
         }
 
         // Update last login time
         updatePlayerLastLogin(playerUUID);
 
-        Ranks.Rank rank = Ranks.getPlayerRank(playerName);
+        Ranks.Rank rank = Ranks.getPlayerRank(player.getUniqueId());
         if (rank != null) {
-            player.setDisplayName(rank.getColor() + player.getName() + org.bukkit.ChatColor.RESET);
+            player.setDisplayName(rank.getColor() + player.getName() + ChatColor.RESET);
         }
     }
 
@@ -40,8 +41,9 @@ public class PlayerJoinListener implements Listener {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, uuid);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -61,11 +63,10 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void updatePlayerLastLogin(String uuid) {
-        String sql = "UPDATE players SET last_login = ? WHERE uuid = ?";
+        String sql = "UPDATE players SET last_login = CURRENT_TIMESTAMP WHERE uuid = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, System.currentTimeMillis());
-            ps.setString(2, uuid);
+            ps.setString(1, uuid);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

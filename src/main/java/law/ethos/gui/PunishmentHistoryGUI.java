@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,15 +24,19 @@ public class PunishmentHistoryGUI {
 
         for (int i = 0; i < punishments.size() && i < INVENTORY_SIZE; i++) {
             Punishments.Punishment punishment = punishments.get(i);
-            ItemStack item = new ItemStack(getMaterialForPunishmentType(punishment.getType()));
+            ItemStack item = new ItemStack(Material.PAPER); // Change to Material.NAME_TAG if you want name tags
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(ChatColor.YELLOW + punishment.getType().toString());
-            meta.setLore(Arrays.asList(
-                    ChatColor.GRAY + "Reason: " + punishment.getReason(),
-                    ChatColor.GRAY + "Date: " + punishment.getDate().toString(),
-                    ChatColor.GRAY + "Duration: " + (punishment.getDuration() == -1 ? "Permanent" : punishment.getDuration() + " seconds")
-            ));
-            item.setItemMeta(meta);
+
+            if (meta != null) {
+                meta.setDisplayName(ChatColor.YELLOW + punishment.getType().toString());
+                List<String> lore = new ArrayList<>();
+                lore.add(ChatColor.GRAY + "Reason: " + punishment.getReason());
+                lore.add(ChatColor.GRAY + "Date: " + punishment.getDate().toString());
+                lore.add(ChatColor.GRAY + "Duration: " + Punishments.formatDuration(punishment.getDuration()));
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+            }
+
             inv.setItem(i, item);
         }
 

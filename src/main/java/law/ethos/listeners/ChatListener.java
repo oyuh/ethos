@@ -1,18 +1,19 @@
 package law.ethos.listeners;
 
 import law.ethos.methods.Ranks;
+import law.ethos.methods.Ranks.Rank;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.entity.Player;
-import org.bukkit.ChatColor;
 
 public class ChatListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        Ranks.Rank rank = Ranks.getPlayerRank(player.getName());
+        Rank rank = Ranks.getPlayerRank(player.getUniqueId());
 
         if (rank != null) {
             String prefix = ChatColor.translateAlternateColorCodes('&', rank.getPrefix());

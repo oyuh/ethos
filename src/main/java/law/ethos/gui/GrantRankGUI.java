@@ -1,15 +1,19 @@
 package law.ethos.gui;
 
+import law.ethos.Ethos;
 import law.ethos.methods.Ranks;
+import law.ethos.methods.Ranks.Rank;
+import law.ethos.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class GrantRankGUI {
@@ -20,17 +24,21 @@ public class GrantRankGUI {
     public static void openGrantRankGUI(Player player, Player targetPlayer) {
         Inventory inv = Bukkit.createInventory(null, INVENTORY_SIZE, INVENTORY_NAME);
 
-        List<Ranks.Rank> ranks = Ranks.getAllRanks();
+        List<Rank> ranks = new ArrayList<>((Collection) Ranks.getAllRanks());
         for (int i = 0; i < ranks.size() && i < INVENTORY_SIZE; i++) {
-            Ranks.Rank rank = ranks.get(i);
-            ItemStack item = new ItemStack(Material.NAME_TAG);
+            Rank rank = ranks.get(i);
+            ItemStack item = new ItemStack(org.bukkit.Material.NAME_TAG);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(rank.getColor() + rank.getName());
-            meta.setLore(List.of(
-                    ChatColor.GRAY + "Prefix: " + rank.getPrefix(),
-                    ChatColor.GRAY + "Weight: " + rank.getWeight()
-            ));
-            item.setItemMeta(meta);
+
+            if (meta != null) {
+                meta.setDisplayName(rank.getColor() + rank.getName());
+                List<String> lore = new ArrayList<>();
+                lore.add(ChatColor.GRAY + "Prefix: " + rank.getPrefix());
+                lore.add(ChatColor.GRAY + "Weight: " + rank.getWeight());
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+            }
+
             inv.setItem(i, item);
         }
 
@@ -46,11 +54,14 @@ public class GrantRankGUI {
         if (item == null || !item.hasItemMeta()) return;
 
         String rankName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
-        Ranks.Rank rank = Ranks.getRank(rankName);
+        Rank rank = Ranks.getRank(rankName);
+
         if (rank != null) {
             Player targetPlayer = (Player) player.getMetadata("targetPlayer").get(0).value();
-            Ranks.grantRank(targetPlayer, rankName);
-            player.sendMessage("Granted rank " + rank.getName() + " to " + targetPlayer.getName());
+            Ranks.grantRank(targetPlayer.getUniqueId(), rankName);
+            player.sendMessage(ChatUtil.colorize(Ethos.getInstance().getMessage("messages.grantrank.success")
+                    .replace("{player}", targetPlayer.getName())
+                    .replace("{rank}", rankName)));
             player.closeInventory();
         }
     }
